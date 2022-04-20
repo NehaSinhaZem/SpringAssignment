@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Reference Bootstrap files -->
+    <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <title>List</title>
+</head>
+<body>
+<div style="margin-top: 50px;"
+     class="mainbox col-md-6 col-md-offset-2 col-sm-9 col-sm-offset-2">
+  <a th:href="@{/suppliers/add}">Add Supplier</a>
+    <h3>List of Suppliers</h3>
+    <table class="table table-bordered table-striped">
+      <thead class="thead-dark">
+      <tr>
+          <th>Name</th>
+          <th>Phone</th>
+          <th>Email</th>
+          <th>Action</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="s:${suppliers}">
+          <td th:text="${s.name}"></td>
+          <td th:text="${s.phone}"></td>
+          <td th:text="${s.email}"></td>
+          <td>
+              <a th:href="@{update(id=${s.id})}" class="btn btn-primary btn-sm">Update</a>
+              <a th:href="@{delete(id=${s.id})}" class="btn btn-danger btn-sm"
+                 onclick="if(!confirm('It will delete all the associated products. Are you sure you want to delete?')) return false">Delete</a>
+          </td>
+      </tr>
+      </tbody>
+  </table>
+    <a th:href="@{/home}">Back to Home</a>
+  <form th:action="@{/logout}" method="POST">
+      <button type="submit" value="Logout">Logout</button>
+  </form>
+</div>
+</body>
+</html>

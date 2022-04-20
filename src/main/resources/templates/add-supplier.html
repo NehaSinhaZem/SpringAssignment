@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html  xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <!-- Reference Bootstrap files -->
+    <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <title>Add Supplier</title>
+</head>
+<body>
+<div style="margin-top: 50px;"
+     class="mainbox col-md-3 col-md-offset-2 col-sm-6 col-sm-offset-2">
+    <form th:action="@{save}" method="post">
+        <input type="hidden" th:field="${supplier.id}">
+        <input type="text" th:field="${supplier.name}" placeholder="Name" class="form-control mb-4 col-4"><br>
+        <input type="number" th:field="${supplier.phone}" placeholder="Phone" class="form-control mb-4 col-4"><br>
+        <input type="text" th:field="*{supplier.email}" placeholder="Email" class="form-control mb-4 col-4"><br>
+        <button type="submit" class="btn btn-info col-2">Save</button>
+    </form>
+    <a th:href="@{/suppliers/list}">Back to List</a>
+</div>
+</body>
+</html>

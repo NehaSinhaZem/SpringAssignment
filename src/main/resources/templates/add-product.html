@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html  xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Reference Bootstrap files -->
+    <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <title>Add Product</title>
+</head>
+<body>
+<div style="margin-top: 50px;"
+     class="mainbox col-md-3 col-md-offset-2 col-sm-6 col-sm-offset-2">
+    <form th:action="@{save}" method="post">
+        <input type="hidden" th:field="${product.id}">
+        <input type="text" th:field="${product.name}" placeholder="Name" class="form-control mb-4 col-4"><br>
+        <input type="number" th:field="${product.price}" placeholder="Price" class="form-control mb-4 col-4"><br>
+        <select class="form-control mb-4 col-4" th:field="${product.supid}"  id="dropOperator">
+            <option value="0">select supplier</option>
+            <option th:each="supplier : ${supplier}" th:value="${supplier.id}" th:text="${supplier.name}"></option>
+        </select><br>
+        <button type="submit" class="btn btn-info col-2">Save</button>
+    </form>
+    <a th:href="@{/products/list}">Back to List</a>
+</div>
+</body>
+</html>
