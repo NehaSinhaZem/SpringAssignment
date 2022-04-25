@@ -1,16 +1,20 @@
 package com.example.shopping.controller;
 
+import com.example.shopping.dto.ProductDto;
+import com.example.shopping.dto.SupplierDto;
 import com.example.shopping.entity.Supplier;
-import com.example.shopping.service.ProductService;
 import com.example.shopping.service.SupplierService;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/suppliers")
@@ -21,11 +25,12 @@ public class SupplierController {
     @Autowired
     private SupplierService service;
     @Autowired
-    private ProductService productService;
+    public ModelMapper modelMapper;
     @GetMapping("/list")
     public String getSuppliers(Model model){
-        suppliers = service.getSuppliers();
-        model.addAttribute("suppliers",suppliers);
+        List<SupplierDto> dtoList= service.getSuppliers().stream().map(post -> modelMapper.map(post, SupplierDto.class))
+                .collect(Collectors.toList());
+        model.addAttribute("suppliers",dtoList);
         return "list-suppliers";
     }
     @GetMapping("/add")
@@ -34,20 +39,30 @@ public class SupplierController {
         model.addAttribute("supplier",supplier);
         return "add-supplier";
     }
-    @PostMapping("/save")
-    public String saveSupplier(@ModelAttribute("supplier") Supplier supplier){
-        service.saveSupplier(supplier);
+    @PostMapping(path = "/supplier",consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE})
+    public String saveSupplier(SupplierDto dto){
+        Supplier postRequest = modelMapper.map(dto, Supplier.class);
+//        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Supplier post = service.saveSupplier(postRequest);
+
+        // convert entity to DTO
+        ProductDto postResponse = modelMapper.map(post, ProductDto.class);
         return "redirect:/suppliers/list";
     }
-    @GetMapping("/update")
-    public String showUpdateForm(@RequestParam("id") int id, Model model){
-        Supplier supplier = service.findSupplier(id);
-        model.addAttribute("supplier",supplier);
-        return "add-supplier";
+    @PostMapping(path = "/supplier/{id}")
+    public String updateSupplier(@PathVariable int id, SupplierDto dto){
+        Supplier supplier = modelMapper.map(dto, Supplier.class);
+        int res = service.updateSupplier(id,supplier);
+        return "redirect:/suppliers/list";
+    }
+    @RequestMapping(path = "/supplier/update")
+    public String updateSupplierForm(@RequestParam("id") int id,Model model){
+        SupplierDto supplierDto = modelMapper.map(service.findSupplier(id),SupplierDto.class);
+        model.addAttribute("supplier",supplierDto);
+        return "update-supplier";
     }
     @GetMapping("/delete")
     public String deleteSupplier(@RequestParam("id") int id){
-        Long r = productService.deleteBySupID(id);
         service.deleteSupplier(id);
         return "redirect:/suppliers/list";
     }

@@ -31,10 +31,10 @@
       <tr th:each="p:${products}">
           <td th:text="${p.name}"></td>
           <td th:text="${p.price}"></td>
-          <td th:text="${p.supid}"></td>
-          <td sec:authorize="hasAnyRole('ROLE_ADMIN','ROLE_SUPPLIER')">
-              <a th:href="@{update(id=${p.id})}" class="btn btn-primary btn-sm">Update</a>
-              <a th:href="@{remove(id=${p.id})}" class="btn btn-danger btn-sm"
+          <td th:text="${p.supplier.id}"></td>
+          <td>
+              <a sec:authorize="hasAnyRole('ROLE_ADMIN','ROLE_SUPPLIER')" th:href="@{product/update(id=${p.id})}" class="btn btn-primary btn-sm">Update</a>
+              <a sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{remove(id=${p.id})}" class="btn btn-danger btn-sm"
                  onclick="if(!confirm('Are you sure to delete?')) return false">Delete</a>
           </td>
       </tr>

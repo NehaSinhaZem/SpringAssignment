@@ -13,9 +13,9 @@ import java.util.logging.Logger;
 @Aspect
 @Component
 @Order(2)
-public class DAOLoggingAspect {
-    private static Logger logger = Logger.getLogger(DAOLoggingAspect.class.getName());
-    @Around("execution(* com.example.shopping.dao.*.*(..))")
+public class RepoLoggingAspect {
+    private static Logger logger = Logger.getLogger(RepoLoggingAspect.class.getName());
+    @Around("execution(* com.example.shopping.repository.*.*(..))")
     public Object aroundGetFortune(ProceedingJoinPoint joinPoint) throws Throwable{
         String method=joinPoint.getSignature().toShortString();
         logger.info("Around method "+ method);
@@ -25,7 +25,7 @@ public class DAOLoggingAspect {
         logger.info("Duration: "+(end-begin)/1000);
         return res;
     }
-    @AfterReturning(pointcut = "execution(* com.example.shopping.dao.ProductRepo.*(..))", returning = "res")
+    @AfterReturning(pointcut = "execution(* com.example.shopping.repository.ProductRepo.*(..))", returning = "res")
     public void afterFindingProduct(JoinPoint joinPoint, List<Product> res){
         String method=joinPoint.getSignature().toShortString();
         logger.info("After returning from method "+ method);

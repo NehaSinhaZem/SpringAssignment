@@ -1,15 +1,15 @@
 package com.example.shopping.service;
 
 import com.example.shopping.entity.Product;
+import com.example.shopping.entity.Supplier;
 
 import java.util.List;
 
 public interface ProductService {
     List<Product> getProducts();
-    void saveProduct(Product product);
+    Product saveProduct(Product product);
     void deleteProduct(int id);
     Product findProduct(int id);
 
-    List<Product> getProductsBySupID(int id);
-    Long deleteBySupID(int id);
+    int updateProduct(int id, Product postRequest);
 }

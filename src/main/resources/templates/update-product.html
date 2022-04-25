@@ -10,20 +10,20 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
 
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <title>Add Product</title>
+    <title>Update Product</title>
 </head>
 <body>
 <div style="margin-top: 50px;"
      class="mainbox col-md-3 col-md-offset-2 col-sm-6 col-sm-offset-2">
-    <form th:action="@{product}" th:object="${product}" method="post">
-        <input type="hidden" th:field="*{id}">
-        <input type="text" th:field="*{name}" placeholder="Name" class="form-control mb-4 col-4"><br>
-        <input type="number" th:field="*{price}" placeholder="Price" class="form-control mb-4 col-4"><br>
-        <select sec:authorize="hasAnyRole('ROLE_ADMIN')" class="form-control mb-4 col-4" th:field="*{supplier}">
-            <option value="'0'">select supplier</option>
-            <option th:each="supl : ${supplier}" th:value="${supl.id}" th:text="${supl.name}"></option>
+    <form th:action="@{{id}(id=${product.id})}" method="post">
+        <input type="hidden" th:field="${product.id}">
+<!--        <input type="text" th:field="${product.name}" placeholder="Name" class="form-control mb-4 col-4"><br>-->
+        <input type="number" th:field="${product.price}" placeholder="Price" class="form-control mb-4 col-4"><br>
+        <select sec:authorize="hasAnyRole('ROLE_ADMIN')" class="form-control mb-4 col-4" th:field="${product.supplier}">
+            <option value="0">select supplier</option>
+            <option th:each="suppl : ${supplier}" th:value="${suppl.id}" th:text="${suppl.name}"></option>
         </select><br>
-        <button type="submit" class="btn btn-info col-2">Save</button>
+        <button type="submit" class="btn btn-info col-2">Update</button>
     </form>
     <a th:href="@{/products/list}">Back to List</a>
 </div>

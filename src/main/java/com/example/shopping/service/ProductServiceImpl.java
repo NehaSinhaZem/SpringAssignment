@@ -1,9 +1,12 @@
 package com.example.shopping.service;
 
-import com.example.shopping.dao.ProductRepo;
+import com.example.shopping.entity.Supplier;
+import com.example.shopping.repository.ProductRepo;
 import com.example.shopping.entity.Product;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,15 +17,26 @@ import java.util.Optional;
 public class ProductServiceImpl implements ProductService{
     @Autowired
     private ProductRepo productRepo;
-
+    @Autowired
+    private SupplierService supplierService;
     @Override
     public List<Product> getProducts() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.getAuthorities().stream().anyMatch(role -> role.getAuthority().equals("ROLE_SUPPLIER"))) {
+            Supplier supplier=supplierService.findSupplier(auth.getName());
+            return supplier.getProductList();
+        }
         return productRepo.findAll();
     }
-
     @Override
-    public void saveProduct(Product product) {
+    public Product saveProduct(Product product) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.getAuthorities().stream().anyMatch(role -> role.getAuthority().equals("ROLE_SUPPLIER"))) {
+            Supplier supplier= supplierService.findSupplier(auth.getName());
+            product.setSupplier(supplier);
+        }
         productRepo.save(product);
+        return product;
     }
 
     @Override
@@ -38,13 +52,17 @@ public class ProductServiceImpl implements ProductService{
         throw new RuntimeException("Product not found");
     }
 
-    public List<Product> getProductsBySupID(int id) {
-        System.out.println(id);
-        return productRepo.findProductsBysupid(id);
+    public List<Product> getProductsBySupplier(Supplier supplier) {
+        return productRepo.findProductsBySupplier(supplier);
     }
 
     @Override @Transactional
-    public Long deleteBySupID(int supid) {
-        return productRepo.deleteBysupid(supid);
+    public int updateProduct(int id, Product product) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.getAuthorities().stream().anyMatch(role -> role.getAuthority().equals("ROLE_SUPPLIER"))) {
+            Supplier supplier = supplierService.findSupplier(auth.getName());
+            product.setSupplier(supplier);
+        }
+        return productRepo.updateProductInfoById(product.getPrice(),product.getSupplier().getId(),id);
     }
 }

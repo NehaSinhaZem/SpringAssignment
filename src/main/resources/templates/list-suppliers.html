@@ -32,7 +32,7 @@
           <td th:text="${s.phone}"></td>
           <td th:text="${s.email}"></td>
           <td>
-              <a th:href="@{update(id=${s.id})}" class="btn btn-primary btn-sm">Update</a>
+              <a th:href="@{supplier/update(id=${s.id})}" class="btn btn-primary btn-sm">Update</a>
               <a th:href="@{delete(id=${s.id})}" class="btn btn-danger btn-sm"
                  onclick="if(!confirm('It will delete all the associated products. Are you sure you want to delete?')) return false">Delete</a>
           </td>
