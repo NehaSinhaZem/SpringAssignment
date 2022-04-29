@@ -1,4 +1,4 @@
-package com.example.shopping.service;
+package com.example.shopping.service.implementation;
 
 import com.example.shopping.aspect.RepoLoggingAspect;
 import com.example.shopping.entity.Authority;
@@ -7,6 +7,7 @@ import com.example.shopping.repository.AuthorityRepo;
 import com.example.shopping.repository.SupplierRepo;
 import com.example.shopping.entity.Supplier;
 import com.example.shopping.repository.UserRepo;
+import com.example.shopping.service.SupplierService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,7 +18,7 @@ import java.util.Optional;
 import java.util.logging.Logger;
 
 @Service @AllArgsConstructor
-public class SupplierServiceImpl implements SupplierService{
+public class SupplierServiceImpl implements SupplierService {
     @Autowired
     private SupplierRepo supplierRepo;
     @Autowired

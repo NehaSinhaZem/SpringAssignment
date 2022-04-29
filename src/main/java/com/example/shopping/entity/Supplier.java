@@ -12,17 +12,18 @@ import java.util.List;
 @Table(name="supplier")
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter @Setter
 public class Supplier {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id") @Getter @Setter
+    @Column(name = "id")
     private int id;
-    @Column(name="name") @NotNull(message = "Name cannot be empty") @Getter @Setter
+    @Column(name="name") @NotNull(message = "Name cannot be empty")
     private String name;
-    @Column(name = "phone") @Size(message = "Length should be 10") @Getter @Setter
+    @Column(name = "phone") @Size(message = "Length should be 10")
     private String phone;
-    @Column(name = "email") @Email(message = "Invalid email") @Getter @Setter
+    @Column(name = "email") @Email(message = "Invalid email")
     private String email;
-    @OneToMany(mappedBy = "supplier",cascade = CascadeType.ALL) @Getter @Setter
+    @OneToMany(mappedBy = "supplier",cascade = CascadeType.ALL)
     List<Product> productList;
 }

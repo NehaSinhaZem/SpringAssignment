@@ -1,42 +1,34 @@
 package com.example.shopping.controller;
 
+import com.example.shopping.convertor.ProductMapper;
 import com.example.shopping.dto.ProductDto;
 import com.example.shopping.entity.Product;
 import com.example.shopping.entity.Supplier;
 import com.example.shopping.service.ProductService;
 import com.example.shopping.service.SupplierService;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import org.modelmapper.ModelMapper;
+import lombok.Value;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/products")
-@AllArgsConstructor @NoArgsConstructor
 public class ProductController {
-//    @Autowired
     List<Product> productList;
     @Autowired
     private ProductService service;
-    public ProductController(ProductService service){
-        this.service=service;
-    }
     @Autowired
     private SupplierService supplierService;
-    public ProductController(ProductService productService,SupplierService supplierService){
-        service=productService;
-        this.supplierService=supplierService;
-    }
     @Autowired
-    public ModelMapper modelMapper;
+    public ProductMapper mapper;
 
     @GetMapping("/add")
     public String showAddForm(Model model){
@@ -54,8 +46,7 @@ public class ProductController {
 
     @GetMapping("/list")
     public String getProducts(Model model){
-        List<ProductDto> dtoList= service.getProducts().stream().map(post -> modelMapper.map(post, ProductDto.class))
-                .collect(Collectors.toList());
+        List<ProductDto> dtoList= mapper.getDtoList(service.getProducts());
         model.addAttribute("products",dtoList);
         return "list-products";
     }
@@ -63,32 +54,33 @@ public class ProductController {
     public ResponseEntity<ProductDto> getProduct(@PathVariable int id){
         Product product = service.findProduct(id);
         if(product==null)
-            throw new RuntimeException("Employee not found");
-        ProductDto getResponse = modelMapper.map(product, ProductDto.class);
+            throw new RuntimeException("Product not found");
+        ProductDto productDto = mapper.convertToDto(product);
 
-        return ResponseEntity.ok().body(getResponse);
+        return ResponseEntity.ok().body(productDto);
     }
-    @PostMapping(path = "/product",consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE})
-    public String saveProduct(ProductDto dto){
-            // convert DTO to entity
-            Product postRequest = modelMapper.map(dto, Product.class);
-
-            Product post = service.saveProduct(postRequest);
-
-            ProductDto postResponse = modelMapper.map(post, ProductDto.class);
-
+    @PostMapping(path = "/product")
+    public String saveProduct(@Valid @ModelAttribute("product") ProductDto productDto, BindingResult bindingResult){
+            // convert DTO to entity ,consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE}
+        if(!bindingResult.hasErrors()) {
+            Product newProduct = mapper.convertToEntity(productDto);
+            Product product = service.saveProduct(newProduct);
+            ProductDto postResponse = mapper.convertToDto(product);
             return "redirect:/products/list";
+        }
+//        else
+            return null;
     }
     @PostMapping(path = "/product/{id}")
-    public String updateProduct(@PathVariable int id, ProductDto dto){
-        Product product = modelMapper.map(dto, Product.class);
+    public String updateProduct(@PathVariable int id, ProductDto productDto){
+        Product product = mapper.convertToEntity(productDto);
         int res = service.updateProduct(id,product);
 
         return "redirect:/products/list";
     }
     @RequestMapping(path = "/product/update")
     public String updateProductForm(@RequestParam("id") int id,Model model){
-        ProductDto productDto = modelMapper.map(service.findProduct(id),ProductDto.class);
+        ProductDto productDto = mapper.convertToDto(service.findProduct(id));
         model.addAttribute("product",productDto);
         List<Supplier> suppliers = supplierService.getSuppliers();
         model.addAttribute("supplier",suppliers);

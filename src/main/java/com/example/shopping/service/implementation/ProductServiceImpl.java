@@ -1,9 +1,11 @@
-package com.example.shopping.service;
+package com.example.shopping.service.implementation;
 
 import com.example.shopping.entity.Supplier;
+import com.example.shopping.exception.ProductNotFoundException;
 import com.example.shopping.repository.ProductRepo;
 import com.example.shopping.entity.Product;
-import lombok.AllArgsConstructor;
+import com.example.shopping.service.ProductService;
+import com.example.shopping.service.SupplierService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -12,9 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
-
-@AllArgsConstructor @Service
-public class ProductServiceImpl implements ProductService{
+@Service
+public class ProductServiceImpl implements ProductService {
     @Autowired
     private ProductRepo productRepo;
     @Autowired
@@ -49,7 +50,7 @@ public class ProductServiceImpl implements ProductService{
         Optional<Product> product = productRepo.findById(id);
         if(product.isPresent())
             return product.get();
-        throw new RuntimeException("Product not found");
+        throw new ProductNotFoundException("Product not found");
     }
 
     public List<Product> getProductsBySupplier(Supplier supplier) {
