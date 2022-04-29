@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html  xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Reference Bootstrap files -->
+    <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <style>
+    .error {  color: red;}
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <title>Add Product</title>
+</head>
+<body>
+<div style="margin-top: 50px;"
+     class="mainbox col-md-3 col-md-offset-2 col-sm-6 col-sm-offset-2">
+    <form  th:action="@{product}" th:object="${product}" method="post">
+        <input type="text" th:field="*{name}" id="name" placeholder="Name" class="form-control mb-4 col-4" required>
+        <div th:if="${#fields.hasErrors('name')}"  th:errors="*{name}">Error
+            </div><br>
+        <input type="number" th:field="*{price}" placeholder="Price" class="form-control mb-4 col-4" required><br>
+        <select sec:authorize="hasAnyRole('ROLE_ADMIN')" class="form-control mb-4 col-4" th:field="*{supplier}" required>
+            <option value="0">select supplier</option>
+            <option th:each="supl : ${supplier}" th:value="${supl.id}" th:text="${supl.name}"></option>
+        </select><br>
+        <button type="submit" class="btn btn-info col-2">Save</button>
+    </form>
+    <p th:text="${violation}">
+    </p>
+    <a th:href="@{/products/list}">Back to List</a>
+</div>
+</body>
+</html>
