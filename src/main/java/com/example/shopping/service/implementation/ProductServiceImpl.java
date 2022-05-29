@@ -1,5 +1,8 @@
 package com.example.shopping.service.implementation;
 
+import com.example.shopping.convertor.ProductMapper;
+import com.example.shopping.convertor.SupplierMapper;
+import com.example.shopping.dto.ProductDto;
 import com.example.shopping.entity.Supplier;
 import com.example.shopping.exception.ProductNotFoundException;
 import com.example.shopping.repository.ProductRepo;
@@ -20,24 +23,27 @@ public class ProductServiceImpl implements ProductService {
     private ProductRepo productRepo;
     @Autowired
     private SupplierService supplierService;
+    private ProductMapper productMapper= new ProductMapper();
+    private SupplierMapper supplierMapper= new SupplierMapper();
     @Override
-    public List<Product> getProducts() {
+    public List<ProductDto> getProducts() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.getAuthorities().stream().anyMatch(role -> role.getAuthority().equals("ROLE_SUPPLIER"))) {
-            Supplier supplier=supplierService.findSupplier(auth.getName());
-            return supplier.getProductList();
+            Supplier supplier=supplierMapper.convertToEntity(supplierService.findSupplier(auth.getName()));
+            return productMapper.getDtoList(supplier.getProductList());
         }
-        return productRepo.findAll();
+        List<Product> productList = productRepo.findAll();
+        return productMapper.getDtoList(productList);
     }
     @Override
-    public Product saveProduct(Product product) {
+    public Product saveProduct(ProductDto productDto) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.getAuthorities().stream().anyMatch(role -> role.getAuthority().equals("ROLE_SUPPLIER"))) {
-            Supplier supplier= supplierService.findSupplier(auth.getName());
-            product.setSupplier(supplier);
+            Supplier supplier= supplierMapper.convertToEntity(supplierService.findSupplier(auth.getName()));
+            productDto.setSupplier(supplier);
         }
-        productRepo.save(product);
-        return product;
+        Product product = productMapper.convertToEntity(productDto);
+        return productRepo.save(product);
     }
 
     @Override
@@ -46,24 +52,20 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Product findProduct(int id) {
+    public ProductDto findProduct(int id) {
         Optional<Product> product = productRepo.findById(id);
         if(product.isPresent())
-            return product.get();
+            return productMapper.convertToDto(product.get());
         throw new ProductNotFoundException("Product not found");
     }
 
-    public List<Product> getProductsBySupplier(Supplier supplier) {
-        return productRepo.findProductsBySupplier(supplier);
-    }
-
     @Override @Transactional
-    public int updateProduct(int id, Product product) {
+    public int updateProduct(int id, ProductDto productDto) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.getAuthorities().stream().anyMatch(role -> role.getAuthority().equals("ROLE_SUPPLIER"))) {
-            Supplier supplier = supplierService.findSupplier(auth.getName());
-            product.setSupplier(supplier);
+            Supplier supplier = supplierMapper.convertToEntity(supplierService.findSupplier(auth.getName()));
+            productDto.setSupplier(supplier);
         }
-        return productRepo.updateProductInfoById(product.getPrice(),product.getSupplier().getId(),id);
+        return productRepo.updateProductInfoById(productDto.getPrice(),productDto.getSupplier().getId(),id);
     }
 }

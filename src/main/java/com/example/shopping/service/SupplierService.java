@@ -1,17 +1,20 @@
 package com.example.shopping.service;
 
+import com.example.shopping.dto.SupplierDto;
 import com.example.shopping.entity.Supplier;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 public interface SupplierService {
 
-    List<Supplier> getSuppliers();
-    Supplier saveSupplier(Supplier supplier);
-    void deleteSupplier(int id);
-    Supplier findSupplier(int id);
-    Supplier findSupplier(String name);
-//    int findSupplierId(String name);
+    List<SupplierDto> getSuppliers();
+    Supplier saveSupplier(SupplierDto supplierDto);
 
-    int updateSupplier(int id, Supplier supplier);
+    void deleteSupplier(int id);
+    SupplierDto findSupplier(int id);
+    SupplierDto findSupplier(String name);
+
+    @Transactional
+    int updateSupplier(int id, SupplierDto supplierDto);
 }

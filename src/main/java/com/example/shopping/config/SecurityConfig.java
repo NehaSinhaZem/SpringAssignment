@@ -14,7 +14,7 @@ import javax.sql.DataSource;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private DataSource dataSource;
-    @Autowired
+    @Override
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.jdbcAuthentication()
                 .dataSource(dataSource)
@@ -26,20 +26,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         + "where username = ?");
 
     }
-//    @Override
-//    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-////        User.UserBuilder userBuilder =User.withDefaultPasswordEncoder();
-////        auth.inMemoryAuthentication()
-////                .withUser(userBuilder.username("neha").password("s887").roles("USER"))
-////                .withUser(userBuilder.username("tara").password("tr67").roles("SUPPLIER","USER"))
-////                .withUser(userBuilder.username("mary").password("mary45").roles("ADMIN"));
-//        auth.jdbcAuthentication().dataSource(dataSource);
-//    }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
                 .antMatchers("/products/list").permitAll()
+                .antMatchers("/cart/**").hasRole("CUSTOMER")
                 .antMatchers("/products/**").hasAnyRole("SUPPLIER","ADMIN")
                 .antMatchers("/suppliers/**").hasRole("ADMIN")
                 .anyRequest().authenticated().and()

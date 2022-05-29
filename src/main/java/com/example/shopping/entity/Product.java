@@ -5,6 +5,7 @@ import lombok.*;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.List;
 
 @Entity
 @Table(name="product")
@@ -20,4 +21,7 @@ public class Product {
     @ManyToOne(cascade = {CascadeType.DETACH,CascadeType.MERGE,CascadeType.PERSIST,CascadeType.REFRESH})
     @JoinColumn(name = "sup_id")
     private Supplier supplier;
+    @ManyToMany(fetch = FetchType.LAZY,cascade = {CascadeType.MERGE,CascadeType.DETACH,CascadeType.REFRESH,CascadeType.PERSIST})
+    @JoinTable(name = "cart",joinColumns = @JoinColumn(name = "prod_id"),inverseJoinColumns = @JoinColumn(name = "cust_id"))
+    private List<Customer> customers;
 }

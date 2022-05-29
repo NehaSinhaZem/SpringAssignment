@@ -3,11 +3,9 @@ package com.example.shopping.convertor;
 import com.example.shopping.dto.ProductDto;
 import com.example.shopping.entity.Product;
 import org.modelmapper.ModelMapper;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;
-@Component
 public class ProductMapper {
     private static ModelMapper modelMapper = new ModelMapper();
     public ProductDto convertToDto(Product product){

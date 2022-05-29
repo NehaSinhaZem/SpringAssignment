@@ -17,6 +17,7 @@
      class="mainbox col-md-3 col-md-offset-2 col-sm-6 col-sm-offset-2">
     <form th:action="@{{id}(id=${supplier.id})}" method="post">
         <input type="hidden" th:field="${supplier.id}">
+<!--        <input type="text" th:field="${supplier.name}" placeholder="Name" class="form-control mb-4 col-4"><br>-->
         <input type="text" th:field="${supplier.phone}" placeholder="Phone" class="form-control mb-4 col-4"><br>
         <button type="submit" class="btn btn-info col-2">Update</button>
     </form>

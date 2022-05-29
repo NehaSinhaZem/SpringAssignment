@@ -1,6 +1,7 @@
 package com.example.shopping.service.implementation;
 
-import com.example.shopping.aspect.RepoLoggingAspect;
+import com.example.shopping.convertor.SupplierMapper;
+import com.example.shopping.dto.SupplierDto;
 import com.example.shopping.entity.Authority;
 import com.example.shopping.entity.User;
 import com.example.shopping.repository.AuthorityRepo;
@@ -8,16 +9,14 @@ import com.example.shopping.repository.SupplierRepo;
 import com.example.shopping.entity.Supplier;
 import com.example.shopping.repository.UserRepo;
 import com.example.shopping.service.SupplierService;
-import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Logger;
 
-@Service @AllArgsConstructor
+@Service
 public class SupplierServiceImpl implements SupplierService {
     @Autowired
     private SupplierRepo supplierRepo;
@@ -25,46 +24,47 @@ public class SupplierServiceImpl implements SupplierService {
     private UserRepo userRepo;
     @Autowired
     private AuthorityRepo authorityRepo;
+    private final SupplierMapper supplierMapper= new SupplierMapper();
     @Override
-    public List<Supplier> getSuppliers() {
-        return supplierRepo.findAll();
+    public List<SupplierDto> getSuppliers() {
+        return supplierMapper.getDtoList(supplierRepo.findAll());
     }
     @Override
-    public Supplier saveSupplier(Supplier supplier) {
-        supplierRepo.save(supplier);
-        User user = new User(supplier.getEmail(),"{noop}test123",1);
+    public Supplier saveSupplier(SupplierDto supplierDto) {
+        Supplier supplier = supplierRepo.save(supplierMapper.convertToEntity(supplierDto));
+        User user = new User(supplierDto.getEmail(),"{noop}test123",1);
         userRepo.save(user);
-        Authority authority = new Authority(user.getUsername(),"ROLE_SUPPLIER");
+        Authority authority = new Authority(supplier.getEmail(),"ROLE_SUPPLIER");
         authorityRepo.save(authority);
         return supplier;
     }
 
     @Override
     public void deleteSupplier(int id) {
-        User user=userRepo.findByUsername(supplierRepo.findById(id).get().getEmail());
-        Logger logger = Logger.getLogger(RepoLoggingAspect.class.getName());
-        logger.info(supplierRepo.findById(id).get().getEmail());
+        Optional<Supplier> supplier = supplierRepo.findById(id);
+        if(supplier.isEmpty())
+            return;
+        User user=userRepo.findByUsername(supplier.get().getEmail());
         user.setEnabled(0);
         userRepo.save(user);
         supplierRepo.deleteById(id);
     }
 
     @Override
-    public Supplier findSupplier(int id) {
+    public SupplierDto findSupplier(int id) {
         Optional<Supplier> supplier = supplierRepo.findById(id);
         if(supplier.isPresent())
-            return supplier.get();
+            return supplierMapper.convertToDto(supplier.get());
         throw new RuntimeException("Supplier not found");
     }
 
     @Override
-    public Supplier findSupplier(String name) {
-        Supplier supplier = supplierRepo.findByEmail(name);
-        return supplier;
+    public SupplierDto findSupplier(String name) {
+        return supplierMapper.convertToDto(supplierRepo.findByEmail(name));
     }
 
     @Override @Transactional
-    public int updateSupplier(int id, Supplier postRequest) {
-        return supplierRepo.updateSupplierInfoById(postRequest.getPhone(),id);
+    public int updateSupplier(int id, SupplierDto supplierDto) {
+        return supplierRepo.updateSupplierInfoById(supplierDto.getPhone(),id);
     }
 }

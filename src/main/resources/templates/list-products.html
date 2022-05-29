@@ -16,7 +16,7 @@
 
 <div style="margin-top: 50px;"
      class="mainbox col-md-6 col-md-offset-2 col-sm-9 col-sm-offset-2">
-    <a th:href="@{/products/add}" sec:authorize="hasAnyRole('ROLE_ADMIN','ROLE_SUPPLIER')">Add Product</a>
+    <a th:href="@{/products/add}" sec:authorize="hasAnyRole('ROLE_SUPPLIER')">Add Product</a>
     <h3>List of Products</h3>
   <table class="table table-bordered table-striped">
       <thead class="thead-dark">
@@ -24,7 +24,7 @@
           <th>Name</th>
           <th>Price</th>
           <th>Supplier Id</th>
-          <th sec:authorize="hasAnyRole('ROLE_ADMIN','ROLE_SUPPLIER')">Action</th>
+          <th>Action</th>
       </tr>
       </thead>
       <tbody>
@@ -32,10 +32,11 @@
           <td th:text="${p.name}"></td>
           <td th:text="${p.price}"></td>
           <td th:text="${p.supplier.id}"></td>
-          <td sec:authorize="hasAnyRole('ROLE_ADMIN','ROLE_SUPPLIER')">
-              <a th:href="@{product/update(id=${p.id})}" class="btn btn-primary btn-sm">Update</a>
-              <a class="btn btn-danger btn-sm" th:href="@{remove(id=${p.id})}"
+          <td>
+              <a sec:authorize="hasAnyRole('ROLE_ADMIN','ROLE_SUPPLIER')" th:href="@{product/update(id=${p.id})}" class="btn btn-primary btn-sm">Update</a>
+              <a sec:authorize="hasAnyRole('ROLE_ADMIN','ROLE_SUPPLIER')" class="btn btn-danger btn-sm" th:href="@{remove(id=${p.id})}"
                  onclick="if(!confirm('Are you sure to delete?')) return false">Delete</a>
+              <a sec:authorize="hasAnyRole('ROLE_CUSTOMER','ANONYMOUS')" th:href="@{/cart/add(id=${p.id})}" class="btn btn-success btn-sm">Add to Cart</a>
           </td>
       </tr>
       </tbody>
